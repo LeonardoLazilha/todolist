@@ -1,163 +1,161 @@
-import { Request, Response } from 'express';
-import taskService from '../service/task.service';
-import categoryService from '../../category/service/category.service';
+import { Request, Response } from "express";
+import taskService from "../service/task.service";
+import categoryService from "../../category/service/category.service";
 
 class TaskController {
-
-    async create(req: Request, res: Response) {
-        try {
-            const task = await taskService.create(req.body);
-            return res.status(201).json(task);
-        } catch (error: any) { 
-            return res.json({
-                status: res.status(500),
-                error: error.message
-            });
-        }
+  async create(req: Request, res: Response) {
+    try {
+      const task = await taskService.create(req.body);
+      return res.status(201).json(task);
+    } catch (error: any) {
+      return res.json({
+        status: res.status(500),
+        error: error.message,
+      });
     }
+  }
 
-    async delete(req: Request, res: Response) {
-        try {
-            const deletedTask = await taskService.delete(req.params.id)
-            return res.status(200).json(deletedTask)
-        } catch (error) {
-            return res.status(500).json({
-                status:500,
-                message: "falha ao deletar task"
-            })
-        }
+  async findAll(req: Request, res: Response) {
+    const findedTasks = await taskService.findAll();
+    return res.json(findedTasks);
+  }
+
+  async findById(req: Request, res: Response) {
+    const findedTask = await taskService.findById(req.params.id);
+    return res.json(findedTask);
+  }
+
+  async findByUserId(req: Request, res: Response) {
+    const userId = req.params.userId;
+    try {
+      const userTasks = await taskService.findByUserId(userId);
+      return res.status(200).json(userTasks);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao buscar tasks do usuário",
+      });
     }
+  }
 
-    async findAll (req: Request, res: Response){
-        const findedTasks = await taskService.findAll()
-        return res.json(findedTasks)
+  async filterTaskByCategory(req: Request, res: Response) {
+    const categoryId = req.params.categoryId;
+    try {
+      const filteredTasks = await taskService.filterTaskByCategory(categoryId);
+      return res.status(200).json(filteredTasks);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "erro ao filtrar tarefas por categoria",
+      });
     }
+  }
 
-    async findById (req: Request, res: Response){
-        const findedTask = await taskService.findById(req.params.id)
-        return res.json(findedTask)
+  async completedTasks(req: Request, res: Response) {
+    const userId = req.params.userId;
+    try {
+      const completedTasks = await taskService.completedTasks(userId);
+      return res.status(200).json(completedTasks);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "Falha ao buscar tasks concluídas",
+      });
     }
+  }
 
-    async update(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            const updatedTask = await taskService.update(id, req.body);
-            return res.status(200).json(updatedTask);
-        } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: 'falha ao atualizar task',
-            });
-        }
+  async pendingTasks(req: Request, res: Response) {
+    const userId = req.params.userId;
+    try {
+      const pendingTasks = await taskService.pendingTasks(userId);
+      return res.status(200).json(pendingTasks);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "Falha ao buscar tasks concluídas",
+      });
     }
+  }
 
-    async findAllByUserId (req: Request, res: Response) {
-        const userId = req.params.userId
-        try {
-            const userTasks = await taskService.findAllByUserId(userId)
-            return res.status(200).json(userTasks)
-        }catch (error){
-            return res.status(500).json({
-                status: 500,
-                message: 'falha ao buscar tasks do usuário',
-            })
-        }
+  async countUserTasks(req: Request, res: Response) {
+    const userId = req.params.userId;
+    try {
+      const taskCount = await taskService.countUserTasks(userId);
+      return res.status(200).json({ count: taskCount });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao contar tarefas do usuário",
+      });
     }
+  }
 
-    async getTaskDetails(req: Request, res: Response) {
-        const taskId = req.params.id;
-        try {
-            const taskDetails = await taskService.getTaskDetailsById(taskId);
-            return res.status(200).json(taskDetails);
-        } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: 'falha ao buscar detalhes da tarefa',
-            });
-        }
+  async findLatestTaskByUser(req: Request, res: Response) {
+    const userId = req.params.userId;
+    try {
+      const latestTask = await taskService.findLatestTaskByUser(userId);
+      return res.status(200).json(latestTask);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao buscar tarefa mais recente do usuário",
+      });
     }
+  }
 
-    async associateTaskWithCategory (req: Request, res: Response) {
-       try {
-            const {taskId, categoryId} = req.params
-            const updatedTask = await taskService.associateTaskWithCategory(taskId, categoryId)
-            return res.status(200).json(updatedTask)
-        } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: 'falha ao associar task com a categoria'
-            })
-        }
-    } 
-
-    async filterTaskByCategory (req: Request, res: Response) {
-        const categoryId = req.params.categoryId
-        try {
-            const filteredTasks = await taskService.filterTaskByCategory(categoryId)
-            return res.status(200).json(filteredTasks)
-        } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: 'erro ao filtrar tarefas por categoria'
-            })
-        }
+  async getTaskDetails(req: Request, res: Response) {
+    const taskId = req.params.id;
+    try {
+      const taskDetails = await taskService.getTaskDetailsById(taskId);
+      return res.status(200).json(taskDetails);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao buscar detalhes da tarefa",
+      });
     }
+  }
 
-    async completedTasks(req: Request, res: Response) {
-        const userId = req.params.userId; 
-        try {
-            const completedTasks = await taskService.completedTasks(userId);
-            return res.status(200).json(completedTasks);
-        } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: 'Falha ao buscar tasks concluídas'
-            });
-        }
+  async associateTaskWithCategory(req: Request, res: Response) {
+    try {
+      const { taskId, categoryId } = req.params;
+      const updatedTask = await taskService.associateTaskWithCategory(
+        taskId,
+        categoryId
+      );
+      return res.status(200).json(updatedTask);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao associar task com a categoria",
+      });
     }
+  }
 
-    async pendingTasks(req: Request, res: Response) {
-        const userId = req.params.userId; 
-        try {
-            const pendingTasks = await taskService.pendingTasks(userId);
-            return res.status(200).json(pendingTasks);
-        } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: 'Falha ao buscar tasks concluídas'
-            });
-        }
+  async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const updatedTask = await taskService.update(id, req.body);
+      return res.status(200).json(updatedTask);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao atualizar task",
+      });
     }
-    
-    
-    
+  }
 
-    async countUserTasks(req: Request, res: Response) {
-        const userId = req.params.userId;
-        try {
-            const taskCount = await taskService.countUserTasks(userId);
-            return res.status(200).json({ count: taskCount });
-        } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: 'falha ao contar tarefas do usuário',
-            });
-        }
+  async delete(req: Request, res: Response) {
+    try {
+      const deletedTask = await taskService.delete(req.params.id);
+      return res.status(200).json(deletedTask);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao deletar task",
+      });
     }
-
-    async findLatestTaskByUser (req: Request, res: Response) {
-        const userId = req.params.userId;
-         try {
-            const latestTask = await taskService.findLatestTaskByUser(userId)
-            return res.status(200).json(latestTask)
-         } catch (error) {
-            return res.status(500).json({
-                status: 500,
-                message: "falha ao buscar tarefa mais recente do usuário"
-            })
-         }
-    }
-
+  }
 }
 
 export default new TaskController();

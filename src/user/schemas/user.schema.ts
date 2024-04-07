@@ -1,17 +1,16 @@
-import mongoose, { Schema, model } from 'mongoose';
+import mongoose, { Schema, model } from "mongoose";
 
-const userSchema = new Schema({
+const userSchema = new Schema(
+  {
     username: { type: String, required: true },
     weight: { type: Number, required: true },
     password: { type: String, required: true },
-    email: { type: String, required: true, unique: true }
-}, {
+    email: { type: String, required: true, unique: true },
+  },
+  {
     timestamps: true,
-    collection: 'users' 
-});
+    collection: "users",
+  }
+);
 
-export default model ('User', userSchema);
-
-//mono repo
-//nx
-
+export default model("User", userSchema);

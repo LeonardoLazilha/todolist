@@ -32,6 +32,21 @@ class CategoryController {
     }
   }
 
+  async getCategoryDetails (req: Request, res: Response) {
+    const categoryId = req.params.id;
+    try {
+      const categoryDetails = await categoryService.getCategoryDetailsById(categoryId);
+      return res.status(200).json(categoryDetails);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao buscar detalhes da categoria",
+      });
+    }
+  }
+
+
+  //como associar um user a uma categoria?
   async findAllByUserId(req: Request, res: Response) {
     const userId = req.params.userId;
     try {

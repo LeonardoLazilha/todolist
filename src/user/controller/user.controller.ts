@@ -8,7 +8,7 @@ class UserController {
       return res.status(201).json(user);
     } catch (error) {
       return res.json({
-        status: res.status(500),
+        status: 500,
         message: "falha ao criar usuario",
       });
     }

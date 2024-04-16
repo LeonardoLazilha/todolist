@@ -16,6 +16,14 @@ class CategoryService {
     return findedCategory;
   }
 
+  async getCategoryDetailsById(id: string) {
+    const categoryDetails = await categoryModel
+      .findById(id)
+      .select("description status -_id");
+    return categoryDetails;
+  }
+
+  // como associar?
   async findAllByUserId(userId: string) {
     const userCategories = await categoryModel.find({ user: userId });
     return userCategories;

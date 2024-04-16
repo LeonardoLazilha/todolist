@@ -54,7 +54,7 @@ class TaskController {
   async completedTasks(req: Request, res: Response) {
     const userId = req.params.userId;
     try {
-      const completedTasks = await taskService.completedTasks(userId);
+      const completedTasks = await taskService.completedTasks();
       return res.status(200).json(completedTasks);
     } catch (error) {
       return res.status(500).json({
@@ -67,7 +67,7 @@ class TaskController {
   async pendingTasks(req: Request, res: Response) {
     const userId = req.params.userId;
     try {
-      const pendingTasks = await taskService.pendingTasks(userId);
+      const pendingTasks = await taskService.pendingTasks();
       return res.status(200).json(pendingTasks);
     } catch (error) {
       return res.status(500).json({
@@ -128,6 +128,47 @@ class TaskController {
       return res.status(500).json({
         status: 500,
         message: "falha ao associar task com a categoria",
+      });
+    }
+  }
+  
+  async avgCompletedTasksByUser(req: Request, res: Response) {
+    const userId = req.params.userId;
+    try {
+      const completedTasks = await taskService.avgCompletedTasksByUser(userId);
+      const totalTasks = await taskService.countUserTasks(userId);
+      const average = totalTasks > 0 ? completedTasks / totalTasks : 0;
+      const formattedAvg = average.toFixed(2);
+      return res.status(200).json({ average: `${formattedAvg}%` });
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao calcular a media de tasks concluidas",
+      });
+    }
+  }
+
+  async longestDescriptionTask(req: Request, res: Response) {
+    try {
+      const longestDescription = await taskService.longestDescriptionTask();
+      return res.status(200).json(longestDescription);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao buscar tarefa com maior descrição",
+      });
+    }
+  }
+
+  async OldestTaskByUser(req: Request, res: Response) {
+    try {
+      const userId = req.params.userId
+      const oldestTask = await taskService.OldestTaskByUser(userId);
+      return res.status(200).json(oldestTask);
+    } catch (error) {
+      return res.status(500).json({ 
+        status: 500,
+        message: 'Falha ao buscar tarefa mais antiga' 
       });
     }
   }

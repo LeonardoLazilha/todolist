@@ -6,11 +6,11 @@ import categoryController from "./category/controller/category.controller";
 const routes = Router();
 
 //-- User
-routes.post("/user", userController.create);
+routes.post("/user", userController.create); //criar user
 routes.get("/users", userController.findAll); // nao foi pedido mas fiz
-routes.get("/user/:id", userController.findById);
-routes.delete("/user/:id", userController.delete);
-routes.put("/user/:id", userController.update);
+routes.get("/user/:id", userController.findById); //achar user
+routes.delete("/user/:id", userController.delete); //deletar user
+routes.put("/user/:id", userController.update); //alterar user
 
 //-- Tasks
 routes.post("/task", taskController.create); //criar task
@@ -37,19 +37,22 @@ routes.put("/category/:id", categoryController.update);
 
 //------ USANDO METODOS DE ARRAY
 routes.get("/task/category/:categoryId", taskController.filterTaskByCategory); //filtar task por categoria
-routes.get("/task/completed/:userId", taskController.completedTasks);
-routes.get("/task/pendind/:userId", taskController.pendingTasks);
-routes.get("/task/count/:userId", taskController.countUserTasks);
-routes.get("/task/latest/:userId", taskController.findLatestTaskByUser);
+routes.get("/task/completed/:userId", taskController.completedTasks); //tarefas completas
+routes.get("/task/pendind/:userId", taskController.pendingTasks); //tarefas pendentes
+routes.get("/task/count/:userId", taskController.countUserTasks); //total de tarefas
+routes.get("/task/latest/:userId", taskController.findLatestTaskByUser); //ultima tarefa 
 
 
 //-Rota para calcular a média de conclusão das tarefas. OK
 routes.get("/task/avgCompletedTasks/:userId", taskController.avgCompletedTasksByUser);
 
-//Rota para encontrar a tarefa com a descrição mais longa. F
+//Rota para encontrar a tarefa com a descrição mais longa. 
 routes.get('/task/longestDescriptionTask', taskController.longestDescriptionTask);
 
-//Rota para encontrar a tarefa mais antiga de um usuário. F
-routes.get('/task/oldestTaskByUser/:userId', taskController.OldestTaskByUser);
+//Rota para encontrar a tarefa mais antiga de um usuário. 
+routes.get('/task/oldestTaskByUser/:userId', taskController.oldestTaskByUser);
+
+//Rota para agrupar tarefas por categoria.
+routes.get('task/byCategory', taskController.getTasksByAllCategories)
 
 export { routes };

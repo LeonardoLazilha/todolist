@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import taskService from "../service/task.service";
+import taskModel from "../schemas/task.schema";
 import categoryService from "../../category/service/category.service";
 
 class TaskController {
@@ -131,7 +132,7 @@ class TaskController {
       });
     }
   }
-  
+
   async avgCompletedTasksByUser(req: Request, res: Response) {
     const userId = req.params.userId;
     try {
@@ -150,7 +151,7 @@ class TaskController {
 
   async longestDescriptionTask(req: Request, res: Response) {
     try {
-      const longestDescription = await taskService.longestDescriptionTask();
+      const longestDescription = await taskService.findLongestDescriptionTask();
       return res.status(200).json(longestDescription);
     } catch (error) {
       return res.status(500).json({
@@ -160,15 +161,35 @@ class TaskController {
     }
   }
 
-  async OldestTaskByUser(req: Request, res: Response) {
+  async oldestTaskByUser(req: Request, res: Response) {
+    const userId = req.params.userId;
     try {
-      const userId = req.params.userId
-      const oldestTask = await taskService.OldestTaskByUser(userId);
+      const oldestTask = await taskService.oldestTaskByUser(userId);
       return res.status(200).json(oldestTask);
     } catch (error) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         status: 500,
-        message: 'Falha ao buscar tarefa mais antiga' 
+        message: "Falha ao buscar tarefa mais antiga",
+      });
+    }
+  }
+
+  async getTasksByAllCategories(req: Request, res: Response) {
+    try {
+      const tasks = await taskModel.find().populate("category");
+
+      const tasksByCategories = tasks.reduce((group: any, task: any) => {
+        const { category } = task;
+        group[category.name] = group[category.name] ?? [];
+        group[category.name].push(task);
+        return group;
+      }, {});
+
+      return res.status(200).json(tasksByCategories);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "falha ao buscar tarefas por categorias",
       });
     }
   }

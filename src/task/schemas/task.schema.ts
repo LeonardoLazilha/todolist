@@ -24,3 +24,4 @@ const taskSchema = new Schema(
 );
 
 export default model("Task", taskSchema);
+//model vem do mongoose, passo nome da colle

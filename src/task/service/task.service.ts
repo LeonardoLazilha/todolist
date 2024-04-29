@@ -87,21 +87,38 @@ class TaskService {
     return taskCompletedCount;
   }
 
-  //task com descricao mais longa NAO DEU CERTO!!!
-  async longestDescriptionTask() {
+  //task com descricao mais longa 
+  async findLongestDescriptionTask() {
     const tasks = await taskModel.find();
-    const longestDescription = tasks.reduce((taskAnterior, taskAtual) => {
-      return taskAnterior.description.length > taskAtual.description.length
-        ? taskAnterior
-        : taskAtual;
-    });
-    return longestDescription.description;
+
+    const longestDescription = tasks.reduce((taskAnterior: any, taskAtual: any) => {
+      return taskAnterior.description.length > taskAtual.description.length ? taskAnterior : taskAtual;
+    }, tasks[0]);
+    return longestDescription;
   }
 
+
+  //agrupar task 
+  async getTasksByAllCategories() {
+    const tasks = await taskModel.find().populate('category');
+    const tasksByCategories = tasks.reduce((group: any, task: any) => {
+      const { category } = task;
+      group[category] = group[category] ?? [];
+      group[category].push(task)
+      return group;
+    }, {})
+    return tasksByCategories;
+  }
+  
+
   //tarefa mais antiga do user
-  async OldestTaskByUser(userId: string) {
-    const oldestTask = await taskModel.findOne({ userId }).sort({ createdAt: 1 });
-    return oldestTask;
+  async oldestTaskByUser(userId: string) {
+    const tasks = await taskModel.find();
+    const userTasks = tasks.filter(task => task.user.toString() === userId);
+    userTasks.sort((t1, t2) => {
+      return new Date(t1.createdAt).getTime() - new Date(t2.createdAt).getTime()
+    })
+    return userTasks[0];
   }
 
   //atualizar task
